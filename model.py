@@ -9,7 +9,8 @@ from tensorflow import keras
 from keras import layers
 from keras.models import Sequential
 from PIL import Image
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix,\
+    ConfusionMatrixDisplay, mean_absolute_error
 
 from visualization import show_images_from_set, show_augmented_images_from_set, plot_model_metrics
 
@@ -84,9 +85,9 @@ num_classes = len(class_names)
 
 model = Sequential([
     data_augmentation,
-    layers.Rescaling(1./255, input_shape=(img_height, img_width, 3)),
+    layers.Rescaling(1./255, input_shape=(img_height, img_width, 3)),  # normalizes pixel values [0, 1]
     layers.Conv2D(16, 3, padding='same', activation='relu'),
-    layers.MaxPooling2D(),
+    layers.MaxPooling2D(),  # downsamples
     layers.Conv2D(32, 3, padding='same', activation='relu'),
     layers.MaxPooling2D(),
     layers.Conv2D(64, 3, padding='same', activation='relu'),
@@ -102,7 +103,7 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 model.summary()
 
-epochs = 20
+epochs = 50
 history = model.fit(
     train_ds,
     validation_data=val_ds,
@@ -130,6 +131,9 @@ test_ds = tf.keras.utils.image_dataset_from_directory(
     shuffle=False
 )
 
+# test_dataset visualization
+show_images_from_set(test_ds, test_ds.class_names)
+
 # evaluation has an average accuracy between 50-55 and loss of 2.1
 # results = model.evaluate(test_ds)
 # print(dict(zip(model.metrics_names, results)))
@@ -152,14 +156,13 @@ for i, _ in enumerate(predictions):
         .format(indexed_labels[i], class_names[np.argmax(score)], np.max(score) * 100)
     )
 
-# Calculate evaluation metrics, plots confusion matrix
+# Calculates evaluation metrics, plots confusion matrix
 y_pred = np.argmax(predictions, axis=1)
 y_test = np.concatenate([y for x, y in test_ds], axis=0)
+
+print("Accuracy: ", accuracy_score(y_test, y_pred))
+
 # cm = confusion_matrix(y_test, y_pred)
-
-# accuracy = accuracy_score(y_test, predictions)
-# print("Accuracy: {:2.f}".format(accuracy))
-
 fig, ax = plt.subplots(figsize=(10, 10))
 ConfusionMatrixDisplay.from_predictions(y_test, y_pred, display_labels=class_names, xticks_rotation="vertical",
                                         ax=ax, colorbar=False)
