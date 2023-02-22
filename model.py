@@ -20,7 +20,7 @@ tf.get_logger().setLevel('ERROR')
 # from version >= 2.11.0 TensorFlow dropped native support for Windows
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))  # 0
 
-data_dir = pathlib.Path('data')
+data_dir = pathlib.Path('train_data')
 
 # count of all images present in training set
 image_count = len(list(data_dir.glob("*/*.png")))
@@ -69,7 +69,7 @@ AUTOTUNE = tf.data.AUTOTUNE  # tunes values dynamically at runtime
 train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
-# data augmentation layer, included in model
+# train_data augmentation layer, included in model
 data_augmentation = keras.Sequential([
     layers.RandomFlip(
         "horizontal",
@@ -121,7 +121,7 @@ epochs_range = range(epochs)
 
 plot_model_metrics(epochs_range, acc, val_acc, loss, val_loss)
 
-# loads test data
+# loads test train_data
 test_data_dir = pathlib.Path("test_data")
 test_ds = tf.keras.utils.image_dataset_from_directory(
     test_data_dir,
