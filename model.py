@@ -1,18 +1,16 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import PIL
 import pathlib
-import numpy.typing as npt
 import tensorflow as tf
 
 from tensorflow import keras
 from keras import layers
 from keras.models import Sequential
-from PIL import Image
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix,\
     ConfusionMatrixDisplay, mean_absolute_error
 
 from visualization import show_images_from_set, show_augmented_images_from_set, plot_model_metrics
+from segmentation import segment_face
 
 # INFO and WARNING messages are not printed
 tf.get_logger().setLevel('ERROR')
@@ -28,6 +26,9 @@ print(image_count)
 
 angry_faces = list(data_dir.glob('angry_face/*'))
 # PIL.Image.open(str(angry_faces[0])).show()
+
+smiling_faces = list(data_dir.glob('smiling_face/*'))
+segmented_face = segment_face(str(smiling_faces[1]))
 
 # loading
 batch_size = 32

@@ -1,6 +1,12 @@
 import matplotlib.pyplot as plt
 
 
+def plot_single_image(image, title):
+    plt.imshow(image)
+    plt.title(title)
+    plt.show()
+
+
 def show_images_from_set(dataset, class_names):
     plt.figure(figsize=(10, 10))
     for images, labels in dataset.take(1):
