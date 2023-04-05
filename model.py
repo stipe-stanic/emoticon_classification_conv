@@ -9,7 +9,8 @@ from keras.models import Sequential
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix,\
     ConfusionMatrixDisplay, mean_absolute_error
 
-from visualization import show_images_from_set, show_augmented_images_from_set, plot_model_metrics
+from plotting import show_images_from_set,\
+    show_augmented_images_from_set, plot_model_metrics, plot_confusion_matrix
 from segmentation import segment_face
 
 # INFO and WARNING messages are not printed
@@ -24,17 +25,17 @@ data_dir = pathlib.Path('train_data')
 image_count = len(list(data_dir.glob("*/*.png")))
 print(image_count)
 
-angry_faces = list(data_dir.glob('angry_face/*'))
+# angry_faces = list(data_dir.glob('angry_face/*'))
 # PIL.Image.open(str(angry_faces[0])).show()
 
 smiling_faces = list(data_dir.glob('smiling_face/*'))
 segmented_face = segment_face(str(smiling_faces[1]))
 
 # loading
-batch_size = 32
+batch_size = 16
 img_height = 120
 img_width = 120
-
+epochs = 40
 # shape(None, 120, 120, 3) dtype=tf.float32
 train_ds = tf.keras.utils.image_dataset_from_directory(
     data_dir,
@@ -70,7 +71,7 @@ AUTOTUNE = tf.data.AUTOTUNE  # tunes values dynamically at runtime
 train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
-# train_data augmentation layer, included in model
+# train_data augmentation layer, included in the model
 data_augmentation = keras.Sequential([
     layers.RandomFlip(
         "horizontal",
@@ -104,7 +105,6 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 model.summary()
 
-epochs = 50
 history = model.fit(
     train_ds,
     validation_data=val_ds,
@@ -139,8 +139,7 @@ show_images_from_set(test_ds, test_ds.class_names)
 # results = model.evaluate(test_ds)
 # print(dict(zip(model.metrics_names, results)))
 
-# indexing labels with class names, dataset is filled with images and labels
-# by going through directories by order of A-Z
+# indexing labels with class names, by going through directories by order of A-Z
 indexed_labels = {}
 for image, label in test_ds:  # Eager Tensor
     for i in range(len(image)):
@@ -164,8 +163,4 @@ y_test = np.concatenate([y for x, y in test_ds], axis=0)
 print("Accuracy: ", accuracy_score(y_test, y_pred))
 
 # cm = confusion_matrix(y_test, y_pred)
-fig, ax = plt.subplots(figsize=(10, 10))
-ConfusionMatrixDisplay.from_predictions(y_test, y_pred, display_labels=class_names, xticks_rotation="vertical",
-                                        ax=ax, colorbar=False)
-
-plt.show()
+plot_confusion_matrix(y_test, y_pred, class_names)

@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
 
-from visualization import plot_single_image
+from plotting import plot_single_image
 
 
+# manual segmentation for now - testing
 def segment_face(image_path):
     img = Image.open(image_path)
 
@@ -24,6 +25,7 @@ def segment_face(image_path):
     return labeled_image
 
 
+# labels the image based on rgba values of original image
 def label_pixels_masked_img(masked_image):
     labels = []
     pixels = masked_image.load()
@@ -38,11 +40,12 @@ def label_pixels_masked_img(masked_image):
             elif pixel[0] <= 220 and pixel[1] <= 120 and pixel[2] >= 0:
                 labels.append("facial_features")
             else:
-                labels.append("smiling_face")
+                labels.append("smiling_face_background")
 
     return labels
 
 
+# applies colors to the new image based on label values
 def apply_labels(masked_image, labels):
     label_img = Image.new('RGB', masked_image.size, (255, 255, 255))
     draw = ImageDraw.Draw(label_img)

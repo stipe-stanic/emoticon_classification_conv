@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from sklearn.metrics import ConfusionMatrixDisplay
 
 
 def plot_single_image(image, title):
@@ -7,6 +8,7 @@ def plot_single_image(image, title):
     plt.show()
 
 
+# 2 x 3 images
 def show_images_from_set(dataset, class_names):
     plt.figure(figsize=(10, 10))
     for images, labels in dataset.take(1):
@@ -18,6 +20,7 @@ def show_images_from_set(dataset, class_names):
     plt.show(block=False)
 
 
+# 3 x 3 images
 def show_augmented_images_from_set(dataset, augmentation_fn):
     plt.figure(figsize=(10, 10))
     for images, _ in dataset.take(1):
@@ -42,4 +45,11 @@ def plot_model_metrics(epochs_range, acc, val_acc, loss, val_loss):
     plt.plot(epochs_range, val_loss, label='Validation Loss')
     plt.legend(loc="upper right")
     plt.title('Training and Validation Loss')
+    plt.show(block=False)
+
+
+def plot_confusion_matrix(y_test, y_pred, class_names):
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ConfusionMatrixDisplay.from_predictions(y_test, y_pred, display_labels=class_names, xticks_rotation="vertical",
+                                            ax=ax, colorbar=False)
     plt.show(block=False)
