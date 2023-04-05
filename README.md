@@ -10,7 +10,7 @@
 - The model architecture consists of augmentation layer, three convolutional layers, each followed by a max pooling layer. The output from the final max pooling layer is flattened and passed through two fully connected (dense) layers, with a final output layer that predicts the class of the emoticon. The model is compiled with the categorical cross-entropy loss function and the Adam optimizer.
 
 ## Model metrics
-<img alt="Training val and acc" height=70% src="/plots_img/model_metrics_01.png" width=70%/>
+<img alt="Training val and acc" height=50% src="/plots_img/model_metrics_01.png" width=50%/>
 
 ## Evaluation
 <img alt="Training val and acc" height=50% src="/plots_img/confusion_matrix_00_model_01.png" width=50%/>
